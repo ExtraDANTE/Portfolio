@@ -64,40 +64,16 @@ export async function transmitTelegramPayload(
   chatId: string,
   message: string,
 ): Promise<{ success: boolean; error?: string }> {
-  let botToken = localStorage.getItem("ViteTeleGramBotToken");
-  let targetChatId = chatId || localStorage.getItem("ViteTelegramChatId");
-
-  if (!botToken || !targetChatId) {
-    botToken = window.prompt(
-      "Enter Telegram Bot Token for Telemetry Validation:",
-    );
-    targetChatId = window.prompt("Enter Telegram Chat ID:");
-
-    if (botToken && targetChatId) {
-      localStorage.setItem("ViteTeleGramBotToken", botToken);
-      localStorage.setItem("ViteTelegramChatId", targetChatId);
-    } else {
-      return {
-        success: false,
-        error: "Access credentials delivery deployment denied.",
-      };
-    }
-  }
-
   try {
-    const escapedMessage = message.replace(/([\[\]()~>#+\-=|{}.!])/g, "\\$1");
-    const response = await fetch(
-      `https://api.telegram.org/bot${botToken}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: targetChatId,
-          text: escapedMessage,
-          parse_mode: "MarkdownV2",
-        }),
-      },
-    );
+    const response = await fetch("/api/telegram/sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId || undefined,
+        text: message,
+        parse_mode: "MarkdownV2",
+      }),
+    });
 
     const data = await response.json();
     if (response.ok && data.ok) {
@@ -108,14 +84,14 @@ export async function transmitTelegramPayload(
         error:
           data.description ||
           data.error ||
-          `Telegram responded with status ${response.status}`,
+          `Server responded with status ${response.status}`,
       };
     }
   } catch (err: any) {
     console.error("Telemetry payload routing failure:", err);
     return {
       success: false,
-      error: err.message || "Network error transmitting payload",
+      error: err.message || "Network error transmitting payload via backend",
     };
   }
 }
