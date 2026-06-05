@@ -1,18 +1,11 @@
 <script lang="ts">
-    import { Mail, Send, Terminal, MapPin, Clock } from "lucide-svelte";
+    import { Mail, Send, MapPin, Clock } from "lucide-svelte";
     import { profile } from "./data";
 
-    let { botStatus = "idle", currentTime = "" } = $props<{
-        botStatus: string;
+    let { currentTime = "" } = $props<{
         currentTime: string;
     }>();
 
-    let name = $state("");
-    let email = $state("");
-    let message = $state("");
-    let logs = $state<string[]>([]);
-    let isSending = $state(false);
-    let success = $state(false);
     let copied = $state(false);
 
     const handleCopy = () => {
@@ -21,71 +14,25 @@
         setTimeout(() => (copied = false), 2000);
     };
 
-    const handleSubmit = async (e: Event) => {
-        e.preventDefault();
-        if (!name || !email || !message) return;
-
-        isSending = true;
-        success = false;
-
-        const logSteps = [
-            "Securing transport tunnels via secure endpoints...",
-            "Marshalling message payload into binary structures...",
-            "Generating payload cryptographic hash signature...",
-            "Verifying secure spam compliance boundaries...",
-            "Transmission Initiated: Routing local client packet envelope...",
-        ];
-
-        logs = [logSteps[0]];
-
-        for (let i = 1; i < logSteps.length; i++) {
-            await new Promise((resolve) => setTimeout(resolve, 300));
-            logs = [...logs, logSteps[i]];
-        }
-
-        try {
-            const subject = encodeURIComponent(
-                `Portfolio Message from ${name}`,
-            );
-            const body = encodeURIComponent(
-                `Caller Name: ${name}\n` +
-                    `Caller Address: ${email}\n\n` +
-                    `Message Content Payload:\n${message}`,
-            );
-
-            window.location.href = `mailto:ssdcv608@gmail.com?subject=${subject}&body=${body}`;
-
-            logs = [
-                ...logs,
-                "Delivery Confirmed: Mailto gateway interface spawned successfully!",
-            ];
-            success = true;
-            name = "";
-            email = "";
-            message = "";
-        } catch (err: any) {
-            logs = [...logs, `🔴 Transmission failure: ${err.message || err}`];
-        } finally {
-            isSending = false;
-        }
+    const handleDirectMail = () => {
+        window.location.href = `mailto:ssdcv608@gmail.com`;
     };
 </script>
 
-<section id="contact-gate" class="py-24 max-w-6xl mx-auto px-6">
+<section id="contact-gate" class="py-24 max-w-4xl mx-auto px-6">
     <div
-        class="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 relative z-10"
+        class="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl p-8 sm:p-10 relative z-10 text-left"
     >
-        <div
-            class="lg:col-span-15 bg-slate-950 p-8 sm:p-10 space-y-6 flex flex-col justify-between border-r border-[#111626] text-left lg:col-span-5"
-        >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div class="space-y-5">
                 <div
                     class="flex justify-between items-center bg-slate-950 p-2.5 rounded border border-[#101625]"
                 >
                     <span
                         class="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest block"
-                        >Gateway Telemetry</span
                     >
+                        Gateway Telemetry
+                    </span>
                     <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"
                     ></span>
                 </div>
@@ -99,10 +46,8 @@
                     <p
                         class="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-semibold"
                     >
-                        I monitor my systems communication logs natively. Submit
-                        an inquiry through the dispatcher on the right to
-                        transmit a raw message envelope directly to my inbound
-                        mail interface routing terminal.
+                        Submit an inquiry to transmit a raw message envelope
+                        directly to my inbound mail interface routing terminal.
                     </p>
                 </div>
 
@@ -148,127 +93,37 @@
                 </div>
             </div>
 
-            <div class="space-y-3.5 pt-6 border-t border-white/[0.03]">
-                <div class="text-[10px] tracking-wide text-slate-500 font-mono">
+            <div
+                class="space-y-4 bg-slate-950/50 p-6 rounded-xl border border-slate-800/60 flex flex-col justify-center"
+            >
+                <div
+                    class="text-[10px] tracking-wide text-slate-500 font-mono text-center"
+                >
                     Direct Endpoint:
                     <span
-                        class="block font-mono text-sky-400 bg-slate-950 px-3 py-2.5 rounded border border-slate-800 mt-2 select-all text-center font-bold"
+                        class="block font-mono text-sky-400 bg-slate-950 px-3 py-3 rounded border border-slate-800 mt-2 select-all text-center font-bold text-xs"
                     >
                         {profile.email}
                     </span>
                 </div>
-                <div class="flex gap-2">
+
+                <div class="space-y-2 pt-2">
+                    <button
+                        onclick={handleDirectMail}
+                        class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono font-bold text-xs px-5 py-3 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer w-full uppercase tracking-wider"
+                    >
+                        <Send class="w-4 h-4 text-slate-900" />
+                        <span>Transmit Payload</span>
+                    </button>
+
                     <button
                         onclick={handleCopy}
-                        class="bg-slate-950 border border-white/10 text-sky-400 px-3 py-1.5 rounded-lg text-[9px] cursor-pointer hover:bg-slate-900 hover:text-sky-300 transition-all w-full font-bold uppercase tracking-widest font-mono"
+                        class="bg-slate-950 border border-white/10 text-sky-400 px-3 py-2.5 rounded-lg text-[10px] cursor-pointer hover:bg-slate-900 hover:text-sky-300 transition-all w-full font-bold uppercase tracking-widest font-mono"
                     >
-                        {copied ? "Endpoint Copied!" : "Copy Endpoint"}
+                        {copied ? "Endpoint Copied!" : "Copy Endpoint Address"}
                     </button>
                 </div>
             </div>
-        </div>
-
-        <div
-            class="lg:col-span-15 p-8 sm:p-10 space-y-6 bg-slate-900/45 text-left lg:col-span-7"
-        >
-            <div class="space-y-1">
-                <h3
-                    class="text-base font-bold text-white font-mono flex items-center gap-2"
-                >
-                    <Terminal class="w-4 h-4 text-sky-400" />
-                    <span>Message Payload Dispatcher</span>
-                </h3>
-                <p class="text-xs text-slate-400 font-medium">
-                    Submit an inquiry below and track the terminal logging
-                    buffer progress in real-time.
-                </p>
-            </div>
-
-            <form onsubmit={handleSubmit} class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <span
-                            class="block text-[8px] font-mono text-slate-400 uppercase tracking-widest font-black"
-                            >Caller Signature</span
-                        >
-                        <input
-                            type="text"
-                            required
-                            bind:value={name}
-                            placeholder="E.g., Alexander Rostov"
-                            class="w-full bg-[#03060f] border border-slate-800 rounded-md p-3 text-xs focus:outline-none focus:border-slate-700 text-white font-semibold transition focus:ring-1 focus:ring-sky-500/20"
-                        />
-                    </div>
-                    <div class="space-y-1">
-                        <span
-                            class="block text-[8px] font-mono text-slate-400 uppercase tracking-widest font-black"
-                            >Caller Address (Email)</span
-                        >
-                        <input
-                            type="email"
-                            required
-                            bind:value={email}
-                            placeholder="alex@velocetelecom.com"
-                            class="w-full bg-[#03060f] border border-slate-800 rounded-md p-3 text-xs focus:outline-none focus:border-slate-700 text-white font-mono font-semibold transition focus:ring-1 focus:ring-sky-500/20"
-                        />
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <span
-                        class="block text-[8px] font-mono text-slate-400 uppercase tracking-widest font-black"
-                        >Message Content Payload</span
-                    >
-                    <textarea
-                        required
-                        bind:value={message}
-                        placeholder="Describe your backend architecture expectations, scheduling limits, or custom CLI tool needs..."
-                        rows="4"
-                        class="w-full bg-[#03060f] border border-slate-800 rounded-md p-3 text-xs focus:outline-none focus:border-slate-700 text-white font-semibold transition focus:ring-1 focus:ring-sky-500/20"
-                    ></textarea>
-                </div>
-
-                <div class="flex justify-end pt-2">
-                    <button
-                        type="submit"
-                        disabled={isSending}
-                        class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono font-bold text-xs px-5 py-2.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                        <Send class="w-3.5 h-3.5 text-slate-900" />
-                        <span
-                            >{isSending
-                                ? "Dispatching..."
-                                : "Transmit Payload"}</span
-                        >
-                    </button>
-                </div>
-            </form>
-
-            {#if logs.length > 0}
-                <div
-                    class="bg-[#02050a] border border-slate-800 rounded-lg p-4 font-mono text-[11px] text-slate-400 space-y-2 select-text leading-relaxed"
-                >
-                    <div
-                        class="flex items-center gap-2 border-b border-white/[0.04] pb-1.5 text-slate-500 font-bold justify-between"
-                    >
-                        <span class="text-[9px] uppercase tracking-widest"
-                            >DIAG_STRLOG_BUFFER</span
-                        >
-                        <Terminal class="w-3.5 h-3.5 text-sky-500/70" />
-                    </div>
-                    {#each logs as log}
-                        <div class="flex items-start gap-1">
-                            <span class="text-sky-400 font-bold">&gt;&gt;</span>
-                            <span
-                                class={log.includes("Success") ||
-                                log.includes("Confirmed")
-                                    ? "text-sky-300 font-semibold"
-                                    : "text-slate-300"}>{log}</span
-                            >
-                        </div>
-                    {/each}
-                </div>
-            {/if}
         </div>
     </div>
 </section>
