@@ -64,15 +64,24 @@ export async function transmitTelegramPayload(
   chatId: string,
   message: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const botToken = import.meta.env.ViteTeleGramBotToken;
-  const targetChatId = chatId || import.meta.env.ViteTelegramChatId;
+  let botToken = localStorage.getItem("ViteTeleGramBotToken");
+  let targetChatId = chatId || localStorage.getItem("ViteTelegramChatId");
 
   if (!botToken || !targetChatId) {
-    return {
-      success: false,
-      error:
-        "Configuration keys missing. Please initialize local environment variables.",
-    };
+    botToken = window.prompt(
+      "Enter Telegram Bot Token for Telemetry Validation:",
+    );
+    targetChatId = window.prompt("Enter Telegram Chat ID:");
+
+    if (botToken && targetChatId) {
+      localStorage.setItem("ViteTeleGramBotToken", botToken);
+      localStorage.setItem("ViteTelegramChatId", targetChatId);
+    } else {
+      return {
+        success: false,
+        error: "Access credentials delivery deployment denied.",
+      };
+    }
   }
 
   try {

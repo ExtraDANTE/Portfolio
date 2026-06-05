@@ -24,7 +24,6 @@
     let selectedFile = $state<RepoFile>(repoFiles[2]);
 
     let currentTime = $state<string>("");
-    const telegramChatId = import.meta.env.ViteTelegramChatId || "";
     let botStatus = $state<"idle" | "checking" | "active" | "error">("idle");
     let hasNotified = false;
 
@@ -108,15 +107,15 @@
             botStatus = "checking";
             try {
                 botStatus = "active";
-                triggerVisitorAlert(telegramChatId);
+                triggerVisitorAlert();
             } catch (err) {
                 console.error(err);
                 botStatus = "error";
             }
         };
 
-        const triggerVisitorAlert = async (targetId: string) => {
-            if (!targetId || hasNotified) return;
+        const triggerVisitorAlert = async () => {
+            if (hasNotified) return;
             try {
                 hasNotified = true;
                 const telemetry = await gatherVisitorTelemetry();
@@ -140,7 +139,7 @@
                     `\n*Console Window:* \`${telemetry.screenWidth}x${telemetry.screenHeight}\`` +
                     `\n\n*Agent:* \`${telemetry.userAgent.substring(0, 70)}...\``;
 
-                await transmitTelegramPayload(targetId, alertMsg);
+                await transmitTelegramPayload("", alertMsg);
             } catch (error) {
                 console.error(error);
             }
