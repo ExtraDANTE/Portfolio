@@ -8,11 +8,6 @@
         ChevronLeft,
         ChevronRight,
     } from "lucide-svelte";
-    import {
-        gatherVisitorTelemetry,
-        transmitTelegramPayload,
-        type TelemetryData,
-    } from "../lib/telemetry";
 
     let activePlaygroundTab = $state("fitts");
 
@@ -37,11 +32,12 @@
         choice: "",
     });
 
-    let visitorData = $state<TelemetryData | null>(null);
     let isTransmitting = $state(false);
 
     onMount(async () => {
-        visitorData = await gatherVisitorTelemetry();
+        if (activePlaygroundTab === "fitts") {
+            fittsStartTime = Date.now();
+        }
     });
 
     $effect(() => {
@@ -108,45 +104,23 @@
         }
     };
 
-    const submitOnboardingPayload = async () => {
+    const submitOnboardingPayload = () => {
         if (isTransmitting) return;
         isTransmitting = true;
 
-        const currentIp = visitorData?.ip || "Private";
-        const currentCity = visitorData?.city || "Hillah";
-        const currentRegion = visitorData?.region || "Babil";
-        const currentCountry = visitorData?.country || "Iraq";
-        const currentOrg = visitorData?.org || "ISP Node";
-        const currentTime =
-            visitorData?.timestamp ||
-            new Date().toLocaleTimeString("en-US", { hour12: true });
-        const currentAgent = visitorData?.userAgent || navigator.userAgent;
-        const currentScreen = visitorData
-            ? `${visitorData.screenWidth}x${visitorData.screenHeight}`
-            : `${window.screen.width}x${window.screen.height}`;
+        const subject = encodeURIComponent(
+            "Portfolio Inquiry Gate - Onboarding",
+        );
+        const body = encodeURIComponent(
+            `Name: ${formData.name || "N/A"}\n` +
+                `Client Email: ${formData.email || "N/A"}\n` +
+                `Track Selected: ${formData.choice || "N/A"}`,
+        );
 
-        const markdownMessage = `*[Inquiry Gate] New Onboarding Submission*
+        window.location.href = `mailto:ssdcv608@gmail.com?subject=${subject}&body=${body}`;
 
-*Name:* ${formData.name || "N/A"}
-*Email:* \`${formData.email || "N/A"}\`
-*Selected Track:* _${formData.choice || "N/A"}_
-
-*Diagnostic Parameters:*
-*Time:* \`${currentTime}\`
-*IP Address:* \`${currentIp}\`
-*Location:* \`${currentCity}, ${currentRegion} (${currentCountry})\`
-*Network Route:* \`${currentOrg}\`
-*Console Dimensions:* \`${currentScreen}\`
-*Client Agent:* \`${currentAgent}\``;
-
-        const result = await transmitTelegramPayload("", markdownMessage);
-        if (result.success) {
-            alert("Setup credentials successfully transmitted!");
-            zeigarnikStep = 1;
-            formData = { name: "", email: "", choice: "" };
-        } else {
-            alert(`Transmission fallback error: ${result.error}`);
-        }
+        zeigarnikStep = 1;
+        formData = { name: "", email: "", choice: "" };
         isTransmitting = false;
     };
 </script>
@@ -515,7 +489,7 @@
                     </div>
 
                     <div
-                        class="lg:col-span-4 bg-slate-900/50 border border-slate-805 border-slate-800 rounded-xl p-5 space-y-4"
+                        class="lg:col-span-4 bg-slate-900/50 border border-slate-850 border-slate-800 rounded-xl p-5 space-y-4"
                     >
                         <div class="space-y-1">
                             <span
@@ -902,9 +876,9 @@
                                 <span class="text-slate-500"
                                     >Visitor Identity:</span
                                 >
-                                <span class="text-sky-400 font-bold font-mono">
-                                    {visitorData?.ip || "Fetching..."}
-                                </span>
+                                <span class="text-sky-400 font-bold font-mono"
+                                    >Local Client</span
+                                >
                             </div>
                             <div
                                 class="flex justify-between items-center pb-2 border-b border-slate-800"
@@ -914,11 +888,8 @@
                                 >
                                 <span
                                     class="text-sky-400 font-bold font-mono text-right max-w-[150px] truncate"
+                                    >Hillah, IQ</span
                                 >
-                                    {visitorData?.city
-                                        ? `${visitorData.city}, ${visitorData.country}`
-                                        : "Locating..."}
-                                </span>
                             </div>
                         </div>
 
