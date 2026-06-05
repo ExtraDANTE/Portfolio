@@ -12,7 +12,7 @@
         gatherVisitorTelemetry,
         transmitTelegramPayload,
         type TelemetryData,
-    } from "$lib/telemetry";
+    } from "../lib/telemetry";
 
     let activePlaygroundTab = $state("fitts");
 
@@ -237,6 +237,7 @@
                                     onclick={handleFittsClick}
                                     class="absolute w-3.5 h-3.5 bg-rose-500 rounded-full hover:bg-rose-450 animate-pulse border border-rose-300 cursor-pointer"
                                     style="left: {fittsTargetPos.x}%; top: {fittsTargetPos.y}%; transform: translate(-50%, -50%);"
+                                    aria-label="Target point"
                                 ></button>
                             {:else}
                                 <div class="absolute inset-x-0 bottom-4 px-6">
@@ -396,116 +397,121 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     <div
-                        class="lg:col-span-8 bg-slate-950 border border-slate-850 rounded-xl p-4 min-h-[300px] flex flex-col justify-between"
+                        class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full lg:col-span-8"
                     >
-                        <span
-                            class="text-[10px] font-mono text-slate-500 uppercase tracking-widest block border-b border-slate-900 pb-1.5 mb-2"
+                        <div
+                            class="col-span-1 lg:col-span-12 bg-slate-950 border border-slate-850 rounded-xl p-4 min-h-[300px] flex flex-col justify-between w-full"
                         >
-                            {hicksMode === "before"
-                                ? "STAGE VIEW: OVERWHELMING OPTIONS MATRIX"
-                                : "STAGE VIEW: ARCHITECTURAL FILTERED PILLARS"}
-                        </span>
-
-                        {#if hicksState === "idle"}
-                            <div
-                                class="h-44 flex flex-col items-center justify-center text-center"
+                            <span
+                                class="text-[10px] font-mono text-slate-500 uppercase tracking-widest block border-b border-slate-900 pb-1.5 mb-2"
                             >
-                                <button
-                                    onclick={() =>
-                                        startHicksChallenge(hicksMode)}
-                                    class="bg-slate-900 hover:bg-slate-855 border border-slate-800 px-5 py-2.5 rounded-xl text-sky-400 font-mono text-xs font-bold cursor-pointer transition-transform hover:scale-105"
-                                >
-                                    Launch Latency Choice Evaluation
-                                </button>
-                            </div>
-                        {/if}
+                                {hicksMode === "before"
+                                    ? "STAGE VIEW: OVERWHELMING OPTIONS MATRIX"
+                                    : "STAGE VIEW: ARCHITECTURAL FILTERED PILLARS"}
+                            </span>
 
-                        {#if hicksState === "counting"}
-                            <div
-                                class="p-4 bg-slate-900/10 rounded-lg min-h-[176px] flex flex-col justify-center"
-                            >
-                                <p
-                                    class="text-[11px] font-mono text-amber-400 font-bold mb-4 text-center animate-pulse"
+                            {#if hicksState === "idle"}
+                                <div
+                                    class="h-44 flex flex-col items-center justify-center text-center"
                                 >
-                                    CHOOSE ONE TARGET TO LOG RETRIEVAL TIMES:
-                                </p>
+                                    <button
+                                        onclick={() =>
+                                            startHicksChallenge(hicksMode)}
+                                        class="bg-slate-900 hover:bg-slate-850 border border-slate-800 px-5 py-2.5 rounded-xl text-sky-400 font-mono text-xs font-bold cursor-pointer transition-transform hover:scale-105"
+                                    >
+                                        Launch Latency Choice Evaluation
+                                    </button>
+                                </div>
+                            {/if}
 
-                                {#if hicksMode === "before"}
-                                    <div
-                                        class="grid grid-cols-2 sm:grid-cols-4 gap-2"
+                            {#if hicksState === "counting"}
+                                <div
+                                    class="p-4 bg-slate-900/10 rounded-lg min-h-[176px] flex flex-col justify-center"
+                                >
+                                    <p
+                                        class="text-[11px] font-mono text-amber-400 font-bold mb-4 text-center animate-pulse"
                                     >
-                                        {#each ["Ceramic Cup v1", "Copper Jug B90", "Nomad Wool Carpet", "Glayed Pottery Cl", "Arabic Dallah S1", "Vase Terracotta", "Woven basket craft", "Silver craft plate", "Traditional incense", "Palm leaves box", "Clay vessel historical", "Handicraft pack"] as opt}
-                                            <button
-                                                onclick={() =>
-                                                    handleHicksSelect(opt)}
-                                                class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-850 text-[10px] font-mono rounded-md text-slate-350 cursor-pointer"
-                                            >
-                                                {opt}
-                                            </button>
-                                        {/each}
-                                    </div>
-                                {:else}
-                                    <div
-                                        class="grid grid-cols-1 sm:grid-cols-3 gap-3"
-                                    >
-                                        {#each [{ label: "Ceramics & Clays", desc: "Clays, stones & historical pots" }, { label: "Hand-Hammered Coppers", desc: "Dallahs & silver craft works" }, { label: "Traditional Nomad Sadu", desc: "Vibrant woven carpets & mats" }] as opt}
-                                            <button
-                                                onclick={() =>
-                                                    handleHicksSelect(
-                                                        opt.label,
-                                                    )}
-                                                class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/50 text-left rounded-xl cursor-pointer"
-                                            >
-                                                <span
-                                                    class="block text-xs font-bold text-white"
-                                                    >{opt.label}</span
+                                        CHOOSE ONE TARGET TO LOG RETRIEVAL
+                                        TIMES:
+                                    </p>
+
+                                    {#if hicksMode === "before"}
+                                        <div
+                                            class="grid grid-cols-2 sm:grid-cols-4 gap-2"
+                                        >
+                                            {#each ["Ceramic Cup v1", "Copper Jug B90", "Nomad Wool Carpet", "Glayed Pottery Cl", "Arabic Dallah S1", "Vase Terracotta", "Woven basket craft", "Silver craft plate", "Traditional incense", "Palm leaves box", "Clay vessel historical", "Handicraft pack"] as opt}
+                                                <button
+                                                    onclick={() =>
+                                                        handleHicksSelect(opt)}
+                                                    class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-850 text-[10px] font-mono rounded-md text-slate-350 cursor-pointer"
                                                 >
-                                                <span
-                                                    class="block text-[10px] text-slate-400 mt-1 leading-snug font-semibold"
-                                                    >{opt.desc}</span
+                                                    {opt}
+                                                </button>
+                                            {/each}
+                                        </div>
+                                    {:else}
+                                        <div
+                                            class="grid grid-cols-1 sm:grid-cols-3 gap-3"
+                                        >
+                                            {#each [{ label: "Ceramics & Clays", desc: "Clays, stones & historical pots" }, { label: "Hand-Hammered Coppers", desc: "Dallahs & silver craft works" }, { label: "Traditional Nomad Sadu", desc: "Vibrant woven carpets & mats" }] as opt}
+                                                <button
+                                                    onclick={() =>
+                                                        handleHicksSelect(
+                                                            opt.label,
+                                                        )}
+                                                    class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/50 text-left rounded-xl cursor-pointer"
                                                 >
-                                            </button>
-                                        {/each}
-                                    </div>
-                                {/if}
-                            </div>
-                        {/if}
+                                                    <span
+                                                        class="block text-xs font-bold text-white"
+                                                        >{opt.label}</span
+                                                    >
+                                                    <span
+                                                        class="block text-[10px] text-slate-400 mt-1 leading-snug font-semibold"
+                                                        >{opt.desc}</span
+                                                    >
+                                                </button>
+                                            {/each}
+                                        </div>
+                                    {/if}
+                                </div>
+                            {/if}
 
-                        {#if hicksState === "success"}
-                            <div
-                                class="h-44 flex flex-col items-center justify-center text-center p-4"
-                            >
-                                <span
-                                    class="text-3xl text-sky-400 font-mono font-black"
+                            {#if hicksState === "success"}
+                                <div
+                                    class="h-44 flex flex-col items-center justify-center text-center p-4"
                                 >
-                                    {hicksTimeElapsed
-                                        ? `${(hicksTimeElapsed / 1000).toFixed(2)}s`
-                                        : "0.62s"}
-                                </span>
-                                <span
-                                    class="text-xs text-slate-300 mt-2 font-semibold"
-                                >
-                                    Selection registered: <span
-                                        class="text-sky-400"
-                                        >"{hicksSelectedOption}"</span
+                                    <span
+                                        class="text-3xl text-sky-400 font-mono font-black"
                                     >
-                                </span>
-                                <button
-                                    onclick={() =>
-                                        startHicksChallenge(hicksMode)}
-                                    class="mt-3 text-xs text-sky-400 underline hover:text-sky-355 cursor-pointer font-bold font-mono"
-                                >
-                                    Perform another trial
-                                </button>
-                            </div>
-                        {/if}
+                                        {hicksTimeElapsed
+                                            ? `${(hicksTimeElapsed / 1000).toFixed(2)}s`
+                                            : "0.62s"}
+                                    </span>
+                                    <span
+                                        class="text-xs text-slate-300 mt-2 font-semibold"
+                                    >
+                                        Selection registered: <span
+                                            class="text-sky-400"
+                                            >"{hicksSelectedOption}"</span
+                                        >
+                                    </span>
+                                    <button
+                                        onclick={() =>
+                                            startHicksChallenge(hicksMode)}
+                                        class="mt-3 text-xs text-sky-400 underline hover:text-sky-355 cursor-pointer font-bold font-mono"
+                                    >
+                                        Perform another trial
+                                    </button>
+                                </div>
+                            {/if}
 
-                        <span
-                            class="text-[10px] text-slate-500 font-mono text-center block pt-2 border-t border-slate-905 mt-2"
-                        >
-                            Formula: Choice Latency (T) = b * log2(n + 1) where
-                            n is total options.
-                        </span>
+                            <span
+                                class="text-[10px] text-slate-500 font-mono text-center block pt-2 border-t border-slate-905 mt-2"
+                            >
+                                Formula: Choice Latency (T) = b * log2(n + 1)
+                                where n is total options.
+                            </span>
+                        </div>
                     </div>
 
                     <div
@@ -631,26 +637,28 @@
                                     <div>
                                         <label
                                             class="block text-slate-400 mb-1 font-mono"
-                                            >Full Name *</label
                                         >
-                                        <input
-                                            type="text"
-                                            placeholder="Arthur Pendragon"
-                                            class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left"
-                                            required
-                                        />
+                                            Full Name *
+                                            <input
+                                                type="text"
+                                                placeholder="Arthur Pendragon"
+                                                class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left mt-1 block"
+                                                required
+                                            />
+                                        </label>
                                     </div>
                                     <div>
                                         <label
                                             class="block text-slate-400 mb-1 font-mono"
-                                            >Target Email *</label
                                         >
-                                        <input
-                                            type="email"
-                                            placeholder="arthur@example.com"
-                                            class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left"
-                                            required
-                                        />
+                                            Target Email *
+                                            <input
+                                                type="email"
+                                                placeholder="arthur@example.com"
+                                                class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left mt-1 block"
+                                                required
+                                            />
+                                        </label>
                                     </div>
                                 </div>
                                 <div
@@ -659,39 +667,42 @@
                                     <div>
                                         <label
                                             class="block text-slate-400 mb-1 font-mono"
-                                            >Enterprise Node *</label
                                         >
-                                        <input
-                                            type="text"
-                                            placeholder="Aviation Hub Setup"
-                                            class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left"
-                                            required
-                                        />
+                                            Enterprise Node *
+                                            <input
+                                                type="text"
+                                                placeholder="Aviation Hub Setup"
+                                                class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left mt-1 block"
+                                                required
+                                            />
+                                        </label>
                                     </div>
                                     <div>
                                         <label
                                             class="block text-slate-400 mb-1 font-mono"
-                                            >Deployment Budget (USD) *</label
                                         >
-                                        <input
-                                            type="number"
-                                            placeholder="100000"
-                                            class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left"
-                                            required
-                                        />
+                                            Deployment Budget (USD) *
+                                            <input
+                                                type="number"
+                                                placeholder="100000"
+                                                class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left mt-1 block"
+                                                required
+                                            />
+                                        </label>
                                     </div>
                                 </div>
                                 <div>
                                     <label
                                         class="block text-slate-400 text-xs mb-1 font-mono"
-                                        >Security Requirements *</label
                                     >
-                                    <textarea
-                                        rows="2"
-                                        placeholder="Explain systems configurations..."
-                                        class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left"
-                                        required
-                                    ></textarea>
+                                        Security Requirements *
+                                        <textarea
+                                            rows="2"
+                                            placeholder="Explain systems configurations..."
+                                            class="w-full bg-slate-900 border border-slate-800 rounded-md p-2 text-white text-xs text-left mt-1 block"
+                                            required
+                                        ></textarea>
+                                    </label>
                                 </div>
                                 <div class="flex justify-end pt-2">
                                     <button
@@ -703,7 +714,7 @@
                                 </div>
                             </form>
                         {:else}
-                            <div class="space-y-6">
+                            <div class="space-y-6 w-full">
                                 <div class="space-y-2">
                                     <div
                                         class="flex justify-between text-xs font-mono"
@@ -742,14 +753,17 @@
                                             <div>
                                                 <label
                                                     class="block text-slate-400 text-xs font-mono mb-1"
-                                                    >Your Full Name:</label
                                                 >
-                                                <input
-                                                    type="text"
-                                                    bind:value={formData.name}
-                                                    placeholder="Arthur Pendragon"
-                                                    class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-400"
-                                                />
+                                                    Your Full Name:
+                                                    <input
+                                                        type="text"
+                                                        bind:value={
+                                                            formData.name
+                                                        }
+                                                        placeholder="Arthur Pendragon"
+                                                        class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-400 mt-1 block"
+                                                    />
+                                                </label>
                                             </div>
                                         </div>
                                     {/if}
@@ -763,14 +777,17 @@
                                             <div>
                                                 <label
                                                     class="block text-slate-400 text-xs font-mono mb-1"
-                                                    >Secure Contact Email:</label
                                                 >
-                                                <input
-                                                    type="email"
-                                                    bind:value={formData.email}
-                                                    placeholder="arthur@example.com"
-                                                    class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-400"
-                                                />
+                                                    Secure Contact Email:
+                                                    <input
+                                                        type="email"
+                                                        bind:value={
+                                                            formData.email
+                                                        }
+                                                        placeholder="arthur@example.com"
+                                                        class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-400 mt-1 block"
+                                                    />
+                                                </label>
                                             </div>
                                         </div>
                                     {/if}
@@ -866,7 +883,7 @@
                     </div>
 
                     <div
-                        class="lg:col-span-4 bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4"
+                        class="lg:col-span-4 bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4 w-full"
                     >
                         <div class="space-y-1">
                             <span
