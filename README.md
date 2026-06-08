@@ -28,29 +28,6 @@ A live playground illustrating three foundational guidelines of human-computer i
 An embedded, fully functional terminal and file tree simulator.
 - Guests can run commands like whoami, skills, projects, sysinfo, git log, and clear or print cached project writeups using cat directly in the viewport.
 
-### 3. Live Telegram Notification Setup
-Integrates direct, client-to-host notification routing:
-- **Telegram Visit Notification:** When a user visits the page, a privacy-compliant IP geo-location summary is dispatched as an alert to the host's Telegram Bot.
-- **Direct Telegram Inbox:** Captures contact form entries and instantly forwards names, emails, and messages as clean alerts to the host.
-
----
-
-## Telegram Configuration
-
-To enable direct Telegram notifications on your deployed static build (gh-pages / exitinger.github.io), you need to configure your environment variables:
-
-1. Create a `.env` file in the root of your project.
-2. Define the Telegram-specific environment variables for your Svelte/Vite application. The Svelte application reads these variables to send notifications to your chat.
-3. Place your Telegram Bot Token and Chat ID inside the `.env` file like this:
-
-ViteTeleGramBotToken=
-
-ViteTelegramChatId=
-
-Since your application builds as a static front-end, Vite compiles these variables into the static production bundle securely during build time.
-
----
-
 ## Developed Tech Stack
 
 - **Core Library:** Svelte 5 (Runes state orchestration)
